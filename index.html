@@ -27,6 +27,25 @@
             font-size: 10px;
             line-height: 1.2;
         }
+        /* Style for the inline date editor */
+        .date-input-inline {
+            background: transparent;
+            border: 1px solid transparent;
+            padding: 0;
+            cursor: pointer;
+            font-size: inherit;
+            color: inherit;
+        }
+        .date-input-inline:hover {
+            border-bottom: 1px dashed #94a3b8;
+        }
+        .date-input-inline:focus {
+            outline: none;
+            border: 1px solid #3b82f6;
+            border-radius: 4px;
+            background: white;
+            padding: 0 2px;
+        }
         [v-cloak] { display: none; }
     </style>
 </head>
@@ -283,6 +302,21 @@
             await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tasks', taskId));
         };
 
+        window.updateTaskStartDate = async (taskId, newDate) => {
+            const taskDoc = doc(db, 'artifacts', appId, 'public', 'data', 'tasks', taskId);
+            const taskSnap = await getDoc(taskDoc);
+            if (taskSnap.exists()) {
+                const data = taskSnap.data();
+                const timestamp = new Date().toLocaleString();
+                const newHistory = [...(data.history || []), `Start Date changed to ${newDate}: ${timestamp}`];
+                
+                await updateDoc(taskDoc, {
+                    start: newDate,
+                    history: newHistory
+                });
+            }
+        };
+
         async function updateTaskStatus(taskId, newStatus) {
             const taskDoc = doc(db, 'artifacts', appId, 'public', 'data', 'tasks', taskId);
             const taskSnap = await getDoc(taskDoc);
@@ -344,9 +378,15 @@
                     </button>` : ''}
                     <h4 class="font-bold text-slate-800 mb-3 pr-6">${task.title}</h4>
                     <div class="space-y-2 text-xs">
-                        <div class="flex justify-between">
+                        <div class="flex justify-between items-center">
                             <span class="text-slate-400">Timeline:</span>
-                            <span class="text-slate-700">${new Date(task.start).toLocaleDateString('en-US', {month:'short', day:'numeric'})} — ${endDate}</span>
+                            <div class="text-slate-700 flex items-center gap-1">
+                                <input type="date" value="${task.start}" 
+                                    onchange="updateTaskStartDate('${task.id}', this.value)"
+                                    class="date-input-inline text-blue-600 font-medium"> 
+                                <span class="text-slate-300">—</span>
+                                <span>${endDate}</span>
+                            </div>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-slate-400">Effort:</span>
@@ -360,7 +400,9 @@
                         </div>
                         <div class="pt-2 mt-2 border-t border-slate-50 bg-slate-50/50 rounded p-1">
                             <span class="text-[9px] uppercase font-bold text-slate-400 block mb-1">Activity Log</span>
-                            ${historyHtml}
+                            <div class="max-h-24 overflow-y-auto">
+                                ${historyHtml}
+                            </div>
                         </div>
                     </div>
                 `;
