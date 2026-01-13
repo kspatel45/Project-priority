@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Priority Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <style>
+        .kanban-column {
+            min-height: 200px;
+            transition: background-color 0.2s;
+        }
+        .drag-over {
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        .task-card {
+            cursor: grab;
+        }
+        .task-card:active {
+            cursor: grabbing;
+        }
+        .view-only .task-card {
+            cursor: default;
+        }
+        .history-log {
+            font-size: 10px;
+            line-height: 1.2;
+        }
+        [v-cloak] { display: none; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800 font-sans">
+
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-900">Project Priorities</h1>
+                <p class="text-slate-500">Track and manage daily tasks for the team.</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <!-- Admin/Edit Toggle -->
+                <div class="flex items-center bg-white border border-slate-200 rounded-lg px-3 py-2 shadow-sm">
+                    <span class="text-sm font-medium mr-3 text-slate-600">Admin Mode (Delete)</span>
+                    <button onclick="handleAdminToggleClick()" id="adminToggle" class="relative inline-flex h-6 w-11 items-center rounded-full bg-slate-200 transition-colors">
+                        <span id="toggleKnob" class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-1"></span>
+                    </button>
+                </div>
+                
+                <!-- New Task Button is now always visible for all users -->
+                <button id="newTaskBtn" onclick="openModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium transition shadow-lg flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    New Task
+                </button>
+            </div>
+        </header>
+
+        <!-- Tabs -->
+        <div class="flex space-x-1 bg-slate-200 p-1 rounded-xl mb-8 w-fit">
+            <button onclick="switchTab('Kartik')" id="tab-Kartik" class="tab-btn px-6 py-2 rounded-lg font-medium transition active-tab bg-white text-blue-600 shadow-sm">Kartik</button>
+            <button onclick="switchTab('Harinder')" id="tab-Harinder" class="tab-btn px-6 py-2 rounded-lg font-medium transition text-slate-600 hover:text-slate-900">Harinder</button>
+            <button onclick="switchTab('Sagar')" id="tab-Sagar" class="tab-btn px-6 py-2 rounded-lg font-medium transition text-slate-600 hover:text-slate-900">Sagar</button>
+        </div>
+
+        <!-- Kanban Board -->
+        <div id="kanbanBoard" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Pending -->
+            <div class="flex flex-col h-full">
+                <div class="flex items-center gap-2 mb-4 px-2">
+                    <span class="w-3 h-3 rounded-full bg-slate-400"></span>
+                    <h2 class="font-bold text-slate-700 uppercase tracking-wider text-sm">Pending</h2>
+                    <span id="count-pending" class="ml-auto bg-slate-200 text-slate-600 text-xs font-bold px-2 py-1 rounded-full">0</span>
+                </div>
+                <div id="pending-list" class="kanban-column flex-grow flex flex-col gap-4 p-2 rounded-xl border-2 border-dashed border-slate-200"></div>
+            </div>
+
+            <!-- Active -->
+            <div class="flex flex-col h-full">
+                <div class="flex items-center gap-2 mb-4 px-2">
+                    <span class="w-3 h-3 rounded-full bg-blue-500"></span>
+                    <h2 class="font-bold text-slate-700 uppercase tracking-wider text-sm">Active</h2>
+                    <span id="count-active" class="ml-auto bg-blue-100 text-blue-600 text-xs font-bold px-2 py-1 rounded-full">0</span>
+                </div>
+                <div id="active-list" class="kanban-column flex-grow flex flex-col gap-4 p-2 rounded-xl border-2 border-dashed border-slate-200"></div>
+            </div>
+
+            <!-- Completed -->
+            <div class="flex flex-col h-full">
+                <div class="flex items-center gap-2 mb-4 px-2">
+                    <span class="w-3 h-3 rounded-full bg-green-500"></span>
+                    <h2 class="font-bold text-slate-700 uppercase tracking-wider text-sm">Completed</h2>
+                    <span id="count-completed" class="ml-auto bg-green-100 text-green-600 text-xs font-bold px-2 py-1 rounded-full">0</span>
+                </div>
+                <div id="completed-list" class="kanban-column flex-grow flex flex-col gap-4 p-2 rounded-xl border-2 border-dashed border-slate-200"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Modal -->
+    <div id="taskModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-slate-900">Create New Task</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <form id="taskForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">Task Title</label>
+                    <input type="text" id="taskTitle" required class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" placeholder="e.g. API Integration">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Start Date</label>
+                        <input type="date" id="taskStart" required class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Est. Hours</label>
+                        <input type="number" id="taskHours" required min="1" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="e.g. 12">
+                    </div>
+                </div>
+                <div class="pt-4">
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition">
+                        Add to Pending
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Password Modal -->
+    <div id="passwordModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl">
+            <h3 class="text-xl font-bold text-slate-900 mb-4">Enter Admin Password</h3>
+            <p class="text-slate-500 text-sm mb-4">Password required only to delete tasks.</p>
+            <input type="password" id="adminPasswordInput" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none mb-4" placeholder="Password">
+            <div class="flex gap-2">
+                <button onclick="closePasswordModal()" class="flex-1 bg-slate-200 text-slate-700 py-2 rounded-lg font-medium">Cancel</button>
+                <button onclick="verifyAdminPassword()" class="flex-1 bg-blue-600 text-white py-2 rounded-lg font-medium">Unlock</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, where, orderBy, getDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD3wlsjUrtUyAThQ03bR-RQxZGurtuLrH8",
+            authDomain: "project-tracker-25f83.firebaseapp.com",
+            projectId: "project-tracker-25f83",
+            storageBucket: "project-tracker-25f83.firebasestorage.app",
+            messagingSenderId: "274280875872",
+            appId: "1:274280875872:web:db07d587614358c621c005",
+            measurementId: "G-MZCGJ17EFB"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const appId = "team-priorities-v1";
+
+        // App State
+        window.allTasks = [];
+        window.currentTab = 'Kartik';
+        window.isAdmin = false;
+        window.sortableInstances = [];
+
+        // Auth Setup
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log("Authenticated as:", user.uid);
+                setupRealtimeListener();
+            } else {
+                signInAnonymously(auth);
+            }
+        });
+
+        function setupRealtimeListener() {
+            // Public path for collaborative data
+            const q = query(collection(db, 'artifacts', appId, 'public', 'data', 'tasks'));
+            onSnapshot(q, (snapshot) => {
+                window.allTasks = [];
+                snapshot.forEach(doc => {
+                    window.allTasks.push({ id: doc.id, ...doc.data() });
+                });
+                renderBoard();
+            }, (error) => {
+                console.error("Firestore error:", error);
+            });
+        }
+
+        // Exposed functions for HTML
+        window.switchTab = (person) => {
+            window.currentTab = person;
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'text-blue-600', 'shadow-sm');
+                btn.classList.add('text-slate-600');
+            });
+            const activeBtn = document.getElementById(`tab-${person}`);
+            activeBtn.classList.add('bg-white', 'text-blue-600', 'shadow-sm');
+            activeBtn.classList.remove('text-slate-600');
+            renderBoard();
+        };
+
+        window.handleAdminToggleClick = () => {
+            if (window.isAdmin) {
+                setAdminMode(false);
+            } else {
+                document.getElementById('passwordModal').classList.remove('hidden');
+                document.getElementById('adminPasswordInput').focus();
+            }
+        };
+
+        window.closePasswordModal = () => {
+            document.getElementById('passwordModal').classList.add('hidden');
+            document.getElementById('adminPasswordInput').value = '';
+        };
+
+        window.verifyAdminPassword = () => {
+            const pwd = document.getElementById('adminPasswordInput').value;
+            if (pwd === "Touchpoint") {
+                setAdminMode(true);
+                closePasswordModal();
+            } else {
+                alert("Incorrect Password");
+            }
+        };
+
+        function setAdminMode(val) {
+            window.isAdmin = val;
+            const btn = document.getElementById('adminToggle');
+            const knob = document.getElementById('toggleKnob');
+
+            if (window.isAdmin) {
+                btn.classList.replace('bg-slate-200', 'bg-blue-600');
+                knob.classList.replace('translate-x-1', 'translate-x-6');
+            } else {
+                btn.classList.replace('bg-blue-600', 'bg-slate-200');
+                knob.classList.replace('translate-x-6', 'translate-x-1');
+            }
+
+            renderBoard();
+        }
+
+        window.openModal = () => document.getElementById('taskModal').classList.remove('hidden');
+        window.closeModal = () => {
+            document.getElementById('taskModal').classList.add('hidden');
+            document.getElementById('taskForm').reset();
+            document.getElementById('taskStart').valueAsDate = new Date();
+        };
+
+        document.getElementById('taskForm').onsubmit = async (e) => {
+            e.preventDefault();
+            // All users can create tasks now
+
+            const title = document.getElementById('taskTitle').value;
+            const start = document.getElementById('taskStart').value;
+            const hours = parseInt(document.getElementById('taskHours').value);
+            const timestamp = new Date().toLocaleString();
+
+            const newTask = {
+                title,
+                start,
+                hours,
+                status: 'pending',
+                assignedTo: window.currentTab,
+                createdAt: new Date().toISOString(),
+                history: [`Created: ${timestamp}`]
+            };
+
+            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'tasks'), newTask);
+            closeModal();
+        };
+
+        window.deleteTask = async (taskId) => {
+            if (!window.isAdmin) return;
+            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tasks', taskId));
+        };
+
+        async function updateTaskStatus(taskId, newStatus) {
+            const taskDoc = doc(db, 'artifacts', appId, 'public', 'data', 'tasks', taskId);
+            const taskSnap = await getDoc(taskDoc);
+            if (taskSnap.exists()) {
+                const data = taskSnap.data();
+                const timestamp = new Date().toLocaleString();
+                const newHistory = [...(data.history || []), `Moved to ${newStatus.toUpperCase()}: ${timestamp}`];
+                
+                await updateDoc(taskDoc, {
+                    status: newStatus,
+                    history: newHistory
+                });
+            }
+        }
+
+        function calculateTimeline(startDate, hours) {
+            const start = new Date(startDate);
+            const daysNeeded = Math.ceil(hours / 8);
+            const end = new Date(start);
+            end.setDate(start.getDate() + daysNeeded);
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            const diffTime = end - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            return {
+                endDate: end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                daysLeft: diffDays
+            };
+        }
+
+        function renderBoard() {
+            const columns = {
+                pending: document.getElementById('pending-list'),
+                active: document.getElementById('active-list'),
+                completed: document.getElementById('completed-list')
+            };
+
+            Object.values(columns).forEach(col => col.innerHTML = '');
+            const filteredTasks = window.allTasks.filter(t => t.assignedTo === window.currentTab);
+
+            filteredTasks.forEach(task => {
+                const { endDate, daysLeft } = calculateTimeline(task.start, task.hours);
+                let daysColor = 'text-slate-500';
+                if (task.status !== 'completed') {
+                    if (daysLeft < 0) daysColor = 'text-red-600 font-bold';
+                    else if (daysLeft <= 2) daysColor = 'text-orange-500 font-bold';
+                }
+
+                const historyHtml = (task.history || []).map(entry => `<div class="history-log text-slate-400">• ${entry}</div>`).join('');
+
+                const card = document.createElement('div');
+                card.className = 'task-card bg-white p-4 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-all group relative';
+                card.dataset.id = task.id;
+                card.innerHTML = `
+                    ${window.isAdmin ? `
+                    <button onclick="deleteTask('${task.id}')" class="absolute top-2 right-2 text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    </button>` : ''}
+                    <h4 class="font-bold text-slate-800 mb-3 pr-6">${task.title}</h4>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Timeline:</span>
+                            <span class="text-slate-700">${new Date(task.start).toLocaleDateString('en-US', {month:'short', day:'numeric'})} — ${endDate}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Effort:</span>
+                            <span class="text-slate-700">${task.hours} hrs (~${Math.ceil(task.hours/8)} days)</span>
+                        </div>
+                        <div class="pt-2 border-t border-slate-50 flex justify-between items-center">
+                            <span class="text-slate-400">Status:</span>
+                            <span class="${daysColor}">
+                                ${task.status === 'completed' ? '✓ Finished' : (daysLeft < 0 ? 'Overdue!' : daysLeft + ' days left')}
+                            </span>
+                        </div>
+                        <div class="pt-2 mt-2 border-t border-slate-50 bg-slate-50/50 rounded p-1">
+                            <span class="text-[9px] uppercase font-bold text-slate-400 block mb-1">Activity Log</span>
+                            ${historyHtml}
+                        </div>
+                    </div>
+                `;
+                columns[task.status].appendChild(card);
+            });
+
+            // Update Counters
+            document.getElementById('count-pending').innerText = filteredTasks.filter(t => t.status === 'pending').length;
+            document.getElementById('count-active').innerText = filteredTasks.filter(t => t.status === 'active').length;
+            document.getElementById('count-completed').innerText = filteredTasks.filter(t => t.status === 'completed').length;
+        }
+
+        // Setup Drag & Drop logic inside module
+        const columnsIds = ['pending-list', 'active-list', 'completed-list'];
+        columnsIds.forEach(id => {
+            const el = document.getElementById(id);
+            const sortable = new Sortable(el, {
+                group: 'tasks',
+                animation: 150,
+                ghostClass: 'bg-blue-50',
+                disabled: false, // Always enabled now for everyone
+                onEnd: (evt) => {
+                    const newStatus = evt.to.id.replace('-list', '');
+                    const oldStatus = evt.from.id.replace('-list', '');
+                    if (newStatus !== oldStatus) {
+                        updateTaskStatus(evt.item.dataset.id, newStatus);
+                    }
+                }
+            });
+            window.sortableInstances.push(sortable);
+        });
+
+        // Initialize UI values
+        document.getElementById('taskStart').valueAsDate = new Date();
+
+    </script>
+</body>
+</html>
