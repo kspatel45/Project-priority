@@ -52,14 +52,12 @@
 <body class="bg-slate-50 min-h-screen text-slate-800 font-sans">
 
     <div class="max-w-7xl mx-auto px-4 py-8">
-        <!-- Header -->
         <header class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
                 <h1 class="text-3xl font-bold text-slate-900">Project Priorities</h1>
                 <p class="text-slate-500">Track and manage daily tasks for the team.</p>
             </div>
             <div class="flex items-center gap-4">
-                <!-- Admin/Edit Toggle -->
                 <div class="flex items-center bg-white border border-slate-200 rounded-lg px-3 py-2 shadow-sm">
                     <span class="text-sm font-medium mr-3 text-slate-600">Admin Mode (Delete)</span>
                     <button onclick="handleAdminToggleClick()" id="adminToggle" class="relative inline-flex h-6 w-11 items-center rounded-full bg-slate-200 transition-colors">
@@ -67,7 +65,6 @@
                     </button>
                 </div>
                 
-                <!-- New Task Button is now always visible for all users -->
                 <button id="newTaskBtn" onclick="openModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium transition shadow-lg flex items-center justify-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     New Task
@@ -75,23 +72,17 @@
             </div>
         </header>
 
-        <!-- Tabs -->
-        <div class="flex space-x-1 bg-slate-200 p-1 rounded-xl mb-8 w-fit">
-<button onclick="switchTab('Pipeline')" id="tab-Pipeline" class="tab-btn px-6 py-2 rounded-lg font-medium transition active-tab bg-white text-blue-600 shadow-sm">Pipeline</button>
-            <button onclick="switchTab('Kartik')" id="tab-Kartik" class="tab-btn px-6 py-2 rounded-lg font-medium transition active-tab bg-white text-blue-600 shadow-sm">Kartik</button>
+        <div class="flex space-x-1 bg-slate-200 p-1 rounded-xl mb-8 w-fit overflow-x-auto">
+            <button onclick="switchTab('Pipeline')" id="tab-Pipeline" class="tab-btn px-6 py-2 rounded-lg font-medium transition active-tab bg-white text-blue-600 shadow-sm">Pipeline</button>
+            <button onclick="switchTab('Kartik')" id="tab-Kartik" class="tab-btn px-6 py-2 rounded-lg font-medium transition text-slate-600 hover:text-slate-900">Kartik</button>
             <button onclick="switchTab('Sagar')" id="tab-Sagar" class="tab-btn px-6 py-2 rounded-lg font-medium transition text-slate-600 hover:text-slate-900">Sagar</button>
             <button onclick="switchTab('Giordan')" id="tab-Giordan" class="tab-btn px-6 py-2 rounded-lg font-medium transition text-slate-600 hover:text-slate-900">Giordan</button>
             <button onclick="switchTab('Miguel V')" id="tab-Miguel V" class="tab-btn px-6 py-2 rounded-lg font-medium transition text-slate-600 hover:text-slate-900">Miguel V</button>
             <button onclick="switchTab('Miguel H')" id="tab-Miguel H" class="tab-btn px-6 py-2 rounded-lg font-medium transition text-slate-600 hover:text-slate-900">Miguel H</button>
             <button onclick="switchTab('Jesus')" id="tab-Jesus" class="tab-btn px-6 py-2 rounded-lg font-medium transition text-slate-600 hover:text-slate-900">Jesus</button>
-
-
-            
         </div>
 
-        <!-- Kanban Board -->
         <div id="kanbanBoard" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Pending -->
             <div class="flex flex-col h-full">
                 <div class="flex items-center gap-2 mb-4 px-2">
                     <span class="w-3 h-3 rounded-full bg-slate-400"></span>
@@ -101,7 +92,6 @@
                 <div id="pending-list" class="kanban-column flex-grow flex flex-col gap-4 p-2 rounded-xl border-2 border-dashed border-slate-200"></div>
             </div>
 
-            <!-- Active -->
             <div class="flex flex-col h-full">
                 <div class="flex items-center gap-2 mb-4 px-2">
                     <span class="w-3 h-3 rounded-full bg-blue-500"></span>
@@ -111,7 +101,6 @@
                 <div id="active-list" class="kanban-column flex-grow flex flex-col gap-4 p-2 rounded-xl border-2 border-dashed border-slate-200"></div>
             </div>
 
-            <!-- Completed -->
             <div class="flex flex-col h-full">
                 <div class="flex items-center gap-2 mb-4 px-2">
                     <span class="w-3 h-3 rounded-full bg-green-500"></span>
@@ -123,7 +112,6 @@
         </div>
     </div>
 
-    <!-- Task Modal -->
     <div id="taskModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl">
             <div class="flex justify-between items-center mb-6">
@@ -138,23 +126,32 @@
                     <input type="text" id="taskTitle" required class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" placeholder="e.g. API Integration">
                 </div>
                 <div class="grid grid-cols-3 gap-3">
-    <div>
-        <label class="block text-xs font-semibold text-slate-700 mb-1">Start Date</label>
-        <input type="date" id="taskStart" required class="w-full px-2 py-2 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none transition">
-    </div>
-    <div>
-        <label class="block text-xs font-semibold text-slate-700 mb-1">Est. Hours</label>
-        <input type="number" id="taskHours" required min="1" class="w-full px-2 py-2 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="e.g. 12">
-    </div>
-    <div>
-        <label class="block text-xs font-semibold text-slate-700 mb-1">Progress (%)</label>
-        <input type="number" id="taskPercentage" required min="0" max="100" value="0" class="w-full px-2 py-2 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none transition">
-    </div>
-</div>
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1">Est. Hours</label>
-                        <input type="number" id="taskHours" required min="1" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="e.g. 12">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Start Date</label>
+                        <input type="date" id="taskStart" required class="w-full px-2 py-2 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none transition">
                     </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Est. Hours</label>
+                        <input type="number" id="taskHours" required min="1" class="w-full px-2 py-2 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="e.g. 12">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Progress (%)</label>
+                        <input type="number" id="taskPercentage" required min="0" max="100" value="0" class="w-full px-2 py-2 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none transition">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">Status Tag</label>
+                    <select id="taskTag" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none transition bg-white">
+                        <option value="Incoming">Incoming</option>
+                        <option value="Drawing board" selected>Drawing board</option>
+                        <option value="Schematic">Schematic</option>
+                        <option value="PCB">PCB</option>
+                        <option value="Prototype">Prototype</option>
+                        <option value="Assembly">Assembly</option>
+                        <option value="Testing">Testing</option>
+                        <option value="Release">Release</option>
+                        <option value="Troubleshooting">Troubleshooting</option>
+                    </select>
                 </div>
                 <div class="pt-4">
                     <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition">
@@ -165,7 +162,6 @@
         </div>
     </div>
 
-    <!-- Password Modal -->
     <div id="passwordModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl">
             <h3 class="text-xl font-bold text-slate-900 mb-4">Enter Admin Password</h3>
@@ -178,7 +174,6 @@
         </div>
     </div>
 
-    <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
         import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, where, orderBy, getDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
@@ -206,6 +201,19 @@
         window.isAdmin = false;
         window.sortableInstances = [];
 
+        // Global Style Mappings for the Hardware Tags
+        window.tagStyles = {
+            "Incoming": { border: "border-t-slate-400", bg: "bg-slate-100", text: "text-slate-700" },
+            "Drawing board": { border: "border-t-amber-400", bg: "bg-amber-100", text: "text-amber-800" },
+            "Schematic": { border: "border-t-indigo-500", bg: "bg-indigo-100", text: "text-indigo-800" },
+            "PCB": { border: "border-t-purple-500", bg: "bg-purple-100", text: "text-purple-800" },
+            "Prototype": { border: "border-t-pink-500", bg: "bg-pink-100", text: "text-pink-800" },
+            "Assembly": { border: "border-t-cyan-500", bg: "bg-cyan-100", text: "text-cyan-800" },
+            "Testing": { border: "border-t-orange-500", bg: "bg-orange-100", text: "text-orange-800" },
+            "Release": { border: "border-t-emerald-500", bg: "bg-emerald-100", text: "text-emerald-800" },
+            "Troubleshooting": { border: "border-t-red-500", bg: "bg-red-100", text: "text-red-800" }
+        };
+
         // Auth Setup
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -217,7 +225,6 @@
         });
 
         function setupRealtimeListener() {
-            // Public path for collaborative data
             const q = query(collection(db, 'artifacts', appId, 'public', 'data', 'tasks'));
             onSnapshot(q, (snapshot) => {
                 window.allTasks = [];
@@ -290,29 +297,31 @@
             document.getElementById('taskStart').valueAsDate = new Date();
         };
 
-document.getElementById('taskForm').onsubmit = async (e) => {
-    e.preventDefault();
+        document.getElementById('taskForm').onsubmit = async (e) => {
+            e.preventDefault();
 
-    const title = document.getElementById('taskTitle').value;
-    const start = document.getElementById('taskStart').value;
-    const hours = parseInt(document.getElementById('taskHours').value);
-    const percentage = parseInt(document.getElementById('taskPercentage').value) || 0; // Retrieve percentage
-    const timestamp = new Date().toLocaleString();
+            const title = document.getElementById('taskTitle').value;
+            const start = document.getElementById('taskStart').value;
+            const hours = parseInt(document.getElementById('taskHours').value);
+            const percentage = parseInt(document.getElementById('taskPercentage').value) || 0;
+            const tag = document.getElementById('taskTag').value;
+            const timestamp = new Date().toLocaleString();
 
-    const newTask = {
-        title,
-        start,
-        hours,
-        percentage, // Save percentage to database
-        status: 'pending',
-        assignedTo: window.currentTab,
-        createdAt: new Date().toISOString(),
-        history: [`Created with ${percentage}% progress: ${timestamp}`]
-    };
+            const newTask = {
+                title,
+                start,
+                hours,
+                percentage,
+                tag,
+                status: 'pending',
+                assignedTo: window.currentTab,
+                createdAt: new Date().toISOString(),
+                history: [`Created with ${percentage}% progress under "${tag}": ${timestamp}`]
+            };
 
-    await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'tasks'), newTask);
-    closeModal();
-};
+            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'tasks'), newTask);
+            closeModal();
+        };
 
         window.deleteTask = async (taskId) => {
             if (!window.isAdmin) return;
@@ -334,41 +343,55 @@ document.getElementById('taskForm').onsubmit = async (e) => {
             }
         };
 
-window.updateTaskPercentage = async (taskId, newPercentage) => {
-    const val = Math.min(100, Math.max(0, parseInt(newPercentage) || 0));
-    const taskDoc = doc(db, 'artifacts', appId, 'public', 'data', 'tasks', taskId);
-    const taskSnap = await getDoc(taskDoc);
-    if (taskSnap.exists()) {
-        const data = taskSnap.data();
-        const timestamp = new Date().toLocaleString();
-        
-        // Only update if the percentage actually changed
-        if (data.percentage !== val) {
-            const newHistory = [...(data.history || []), `Progress updated to ${val}%: ${timestamp}`];
-            await updateDoc(taskDoc, {
-                percentage: val,
-                history: newHistory
-            });
-        }
-    }
-};
+        window.updateTaskPercentage = async (taskId, newPercentage) => {
+            const val = Math.min(100, Math.max(0, parseInt(newPercentage) || 0));
+            const taskDoc = doc(db, 'artifacts', appId, 'public', 'data', 'tasks', taskId);
+            const taskSnap = await getDoc(taskDoc);
+            if (taskSnap.exists()) {
+                const data = taskSnap.data();
+                const timestamp = new Date().toLocaleString();
+                
+                if (data.percentage !== val) {
+                    const newHistory = [...(data.history || []), `Progress updated to ${val}%: ${timestamp}`];
+                    await updateDoc(taskDoc, {
+                        percentage: val,
+                        history: newHistory
+                    });
+                }
+            }
+        };
 
-        
+        window.updateTaskTag = async (taskId, newTag) => {
+            const taskDoc = doc(db, 'artifacts', appId, 'public', 'data', 'tasks', taskId);
+            const taskSnap = await getDoc(taskDoc);
+            if (taskSnap.exists()) {
+                const data = taskSnap.data();
+                const timestamp = new Date().toLocaleString();
+                
+                if (data.tag !== newTag) {
+                    const newHistory = [...(data.history || []), `Tag updated to "${newTag}": ${timestamp}`];
+                    await updateDoc(taskDoc, {
+                        tag: newTag,
+                        history: newHistory
+                    });
+                }
+            }
+        };
 
         window.updateTaskAssignment = async (taskId, newAssignee) => {
-    const taskDoc = doc(db, 'artifacts', appId, 'public', 'data', 'tasks', taskId);
-    const taskSnap = await getDoc(taskDoc);
-    if (taskSnap.exists()) {
-        const data = taskSnap.data();
-        const timestamp = new Date().toLocaleString();
-        const newHistory = [...(data.history || []), `Assigned to ${newAssignee}: ${timestamp}`];
-        
-        await updateDoc(taskDoc, {
-            assignedTo: newAssignee,
-            history: newHistory
-        });
-    }
-};
+            const taskDoc = doc(db, 'artifacts', appId, 'public', 'data', 'tasks', taskId);
+            const taskSnap = await getDoc(taskDoc);
+            if (taskSnap.exists()) {
+                const data = taskSnap.data();
+                const timestamp = new Date().toLocaleString();
+                const newHistory = [...(data.history || []), `Assigned to ${newAssignee}: ${timestamp}`];
+                
+                await updateDoc(taskDoc, {
+                    assignedTo: newAssignee,
+                    history: newHistory
+                });
+            }
+        };
 
         async function updateTaskStatus(taskId, newStatus) {
             const taskDoc = doc(db, 'artifacts', appId, 'public', 'data', 'tasks', taskId);
@@ -419,74 +442,90 @@ window.updateTaskPercentage = async (taskId, newPercentage) => {
                     else if (daysLeft <= 2) daysColor = 'text-orange-500 font-bold';
                 }
 
+                const currentTag = task.tag || "Drawing board";
+                const activeStyle = window.tagStyles[currentTag] || window.tagStyles["Drawing board"];
                 const historyHtml = (task.history || []).map(entry => `<div class="history-log text-slate-400">• ${entry}</div>`).join('');
 
                 const card = document.createElement('div');
-                card.className = 'task-card bg-white p-4 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-all group relative';
+                
+                // border-t-8 adds a thick top line colored dynamically by the tag border color mappings.
+                card.className = `task-card bg-white p-4 pt-5 rounded-xl shadow-sm border-t-8 ${activeStyle.border} border-x border-b border-slate-200 hover:shadow-md transition-all group relative`;
                 card.dataset.id = task.id;
                 card.innerHTML = `
-    ${window.isAdmin ? `
-    <button onclick="deleteTask('${task.id}')" class="absolute top-2 right-2 text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-    </button>` : ''}
-    <h4 class="font-bold text-slate-800 mb-3 pr-6">${task.title}</h4>
-    <div class="space-y-2 text-xs">
-        <!-- New Assignee Selector -->
-        <div class="flex justify-between items-center mb-2 pb-2 border-b border-slate-100">
-            <span class="text-slate-400">Assigned To:</span>
-            <select onchange="updateTaskAssignment('${task.id}', this.value)" class="bg-slate-100 text-slate-700 font-medium rounded px-1.5 py-0.5 border-none outline-none cursor-pointer focus:ring-1 focus:ring-blue-500">
-                <option value="Pipeline" ${task.assignedTo === 'Pipeline' ? 'selected' : ''}>Pipeline</option>
-                <option value="Kartik" ${task.assignedTo === 'Kartik' ? 'selected' : ''}>Kartik</option>
-                <option value="Sagar" ${task.assignedTo === 'Sagar' ? 'selected' : ''}>Sagar</option>
-                <option value="Giordan" ${task.assignedTo === 'Giordan' ? 'selected' : ''}>Giordan</option>
-                <option value="Miguel V" ${task.assignedTo === 'Miguel V' ? 'selected' : ''}>Miguel V</option>
-                <option value="Miguel H" ${task.assignedTo === 'Miguel H' ? 'selected' : ''}>Miguel H</option>
-                <option value="Jesus" ${task.assignedTo === 'Jesus' ? 'selected' : ''}>Jesus</option>
-            </select>
-        </div>
+                    ${window.isAdmin ? `
+                    <button onclick="deleteTask('${task.id}')" class="absolute top-2 right-2 text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    </button>` : ''}
+                    
+                    <div class="flex justify-between items-start gap-2 mb-3">
+                        <h4 class="font-bold text-slate-800 pr-4 leading-tight">${task.title}</h4>
+                        <select onchange="updateTaskTag('${task.id}', this.value)" class="text-[10px] font-bold px-2 py-0.5 rounded-full outline-none border-none cursor-pointer ${activeStyle.bg} ${activeStyle.text} transition duration-150">
+                            <option value="Incoming" ${currentTag === 'Incoming' ? 'selected' : ''}>Incoming</option>
+                            <option value="Drawing board" ${currentTag === 'Drawing board' ? 'selected' : ''}>Drawing board</option>
+                            <option value="Schematic" ${currentTag === 'Schematic' ? 'selected' : ''}>Schematic</option>
+                            <option value="PCB" ${currentTag === 'PCB' ? 'selected' : ''}>PCB</option>
+                            <option value="Prototype" ${currentTag === 'Prototype' ? 'selected' : ''}>Prototype</option>
+                            <option value="Assembly" ${currentTag === 'Assembly' ? 'selected' : ''}>Assembly</option>
+                            <option value="Testing" ${currentTag === 'Testing' ? 'selected' : ''}>Testing</option>
+                            <option value="Release" ${currentTag === 'Release' ? 'selected' : ''}>Release</option>
+                            <option value="Troubleshooting" ${currentTag === 'Troubleshooting' ? 'selected' : ''}>Troubleshooting</option>
+                        </select>
+                    </div>
 
+                    <div class="space-y-2 text-xs">
+                        <div class="flex justify-between items-center mb-2 pb-2 border-b border-slate-100">
+                            <span class="text-slate-400">Assigned To:</span>
+                            <select onchange="updateTaskAssignment('${task.id}', this.value)" class="bg-slate-100 text-slate-700 font-medium rounded px-1.5 py-0.5 border-none outline-none cursor-pointer focus:ring-1 focus:ring-blue-500">
+                                <option value="Pipeline" ${task.assignedTo === 'Pipeline' ? 'selected' : ''}>Pipeline</option>
+                                <option value="Kartik" ${task.assignedTo === 'Kartik' ? 'selected' : ''}>Kartik</option>
+                                <option value="Sagar" ${task.assignedTo === 'Sagar' ? 'selected' : ''}>Sagar</option>
+                                <option value="Giordan" ${task.assignedTo === 'Giordan' ? 'selected' : ''}>Giordan</option>
+                                <option value="Miguel V" ${task.assignedTo === 'Miguel V' ? 'selected' : ''}>Miguel V</option>
+                                <option value="Miguel H" ${task.assignedTo === 'Miguel H' ? 'selected' : ''}>Miguel H</option>
+                                <option value="Jesus" ${task.assignedTo === 'Jesus' ? 'selected' : ''}>Jesus</option>
+                            </select>
+                        </div>
 
-<div class="flex justify-between items-center pt-2 border-t border-slate-50">
-    <span class="text-slate-400">Progress:</span>
-    <div class="flex items-center gap-2">
-        <input type="range" min="0" max="100" step="5" 
-            value="${task.percentage || 0}" 
-            onchange="updateTaskPercentage('${task.id}', this.value)"
-            oninput="this.nextElementSibling.innerText = this.value + '%'"
-            class="w-20 h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
-        <span class="text-slate-700 font-bold min-w-[32px] text-right">${task.percentage || 0}%</span>
-    </div>
-</div>
+                        <div class="flex justify-between items-center pt-1 pb-1">
+                            <span class="text-slate-400">Progress:</span>
+                            <div class="flex items-center gap-2">
+                                <input type="range" min="0" max="100" step="5" 
+                                    value="${task.percentage || 0}" 
+                                    onchange="updateTaskPercentage('${task.id}', this.value)"
+                                    oninput="this.nextElementSibling.innerText = this.value + '%'"
+                                    class="w-20 h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                                <span class="text-slate-700 font-bold min-w-[32px] text-right">${task.percentage || 0}%</span>
+                            </div>
+                        </div>
 
-
-        <div class="flex justify-between items-center">
-            <span class="text-slate-400">Timeline:</span>
-            <div class="text-slate-700 flex items-center gap-1">
-                <input type="date" value="${task.start}" 
-                    onchange="updateTaskStartDate('${task.id}', this.value)"
-                    class="date-input-inline text-blue-600 font-medium"> 
-                <span class="text-slate-300">—</span>
-                <span>${endDate}</span>
-            </div>
-        </div>
-        <div class="flex justify-between">
-            <span class="text-slate-400">Effort:</span>
-            <span class="text-slate-700">${task.hours} hrs (~${Math.ceil(task.hours/8)} days)</span>
-        </div>
-        <div class="pt-2 border-t border-slate-50 flex justify-between items-center">
-            <span class="text-slate-400">Status:</span>
-            <span class="${daysColor}">
-                ${task.status === 'completed' ? '✓ Finished' : (daysLeft < 0 ? 'Overdue!' : daysLeft + ' days left')}
-            </span>
-        </div>
-        <div class="pt-2 mt-2 border-t border-slate-50 bg-slate-50/50 rounded p-1">
-            <span class="text-[9px] uppercase font-bold text-slate-400 block mb-1">Activity Log</span>
-            <div class="max-h-24 overflow-y-auto">
-                ${historyHtml}
-            </div>
-        </div>
-    </div>
-`;
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-400">Timeline:</span>
+                            <div class="text-slate-700 flex items-center gap-1">
+                                <input type="date" value="${task.start}" 
+                                    onchange="updateTaskStartDate('${task.id}', this.value)"
+                                    class="date-input-inline text-blue-600 font-medium"> 
+                                <span class="text-slate-300">—</span>
+                                <span>${endDate}</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Effort:</span>
+                            <span class="text-slate-700">${task.hours} hrs (~${Math.ceil(task.hours/8)} days)</span>
+                        </div>
+                        <div class="pt-2 border-t border-slate-50 flex justify-between items-center">
+                            <span class="text-slate-400">Status:</span>
+                            <span class="${daysColor}">
+                                ${task.status === 'completed' ? '✓ Finished' : (daysLeft < 0 ? 'Overdue!' : daysLeft + ' days left')}
+                            </span>
+                        </div>
+                        <div class="pt-2 mt-2 border-t border-slate-50 bg-slate-50/50 rounded p-1">
+                            <span class="text-[9px] uppercase font-bold text-slate-400 block mb-1">Activity Log</span>
+                            <div class="max-h-24 overflow-y-auto">
+                                ${historyHtml}
+                            </div>
+                        </div>
+                    </div>
+                `;
                 columns[task.status].appendChild(card);
             });
 
@@ -504,7 +543,7 @@ window.updateTaskPercentage = async (taskId, newPercentage) => {
                 group: 'tasks',
                 animation: 150,
                 ghostClass: 'bg-blue-50',
-                disabled: false, // Always enabled now for everyone
+                disabled: false,
                 onEnd: (evt) => {
                     const newStatus = evt.to.id.replace('-list', '');
                     const oldStatus = evt.from.id.replace('-list', '');
