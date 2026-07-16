@@ -81,9 +81,9 @@
             <button onclick="switchTab('Kartik')" id="tab-Kartik" class="tab-btn px-6 py-2 rounded-lg font-medium transition active-tab bg-white text-blue-600 shadow-sm">Kartik</button>
             <button onclick="switchTab('Sagar')" id="tab-Sagar" class="tab-btn px-6 py-2 rounded-lg font-medium transition text-slate-600 hover:text-slate-900">Sagar</button>
             <button onclick="switchTab('Giordan')" id="tab-Giordan" class="tab-btn px-6 py-2 rounded-lg font-medium transition text-slate-600 hover:text-slate-900">Giordan</button>
-            <button onclick="switchTab('Miguel V')" id="tab-Miguel V" class="tab-btn px-6 py-2 rounded-lg font-medium transition text-slate-600 hover:text-slate-900">Giordan</button>
-            <button onclick="switchTab('Giordan')" id="tab-Giordan" class="tab-btn px-6 py-2 rounded-lg font-medium transition text-slate-600 hover:text-slate-900">Giordan</button>
-            <button onclick="switchTab('Giordan')" id="tab-Giordan" class="tab-btn px-6 py-2 rounded-lg font-medium transition text-slate-600 hover:text-slate-900">Giordan</button>
+            <button onclick="switchTab('Miguel V')" id="tab-Miguel V" class="tab-btn px-6 py-2 rounded-lg font-medium transition text-slate-600 hover:text-slate-900">Miguel V</button>
+            <button onclick="switchTab('Miguel H')" id="tab-Miguel H" class="tab-btn px-6 py-2 rounded-lg font-medium transition text-slate-600 hover:text-slate-900">Miguel H</button>
+            <button onclick="switchTab('Jesus')" id="tab-Jesus" class="tab-btn px-6 py-2 rounded-lg font-medium transition text-slate-600 hover:text-slate-900">Jesus</button>
 
 
             
@@ -439,6 +439,9 @@ window.updateTaskPercentage = async (taskId, newPercentage) => {
                 <option value="Kartik" ${task.assignedTo === 'Kartik' ? 'selected' : ''}>Kartik</option>
                 <option value="Sagar" ${task.assignedTo === 'Sagar' ? 'selected' : ''}>Sagar</option>
                 <option value="Giordan" ${task.assignedTo === 'Giordan' ? 'selected' : ''}>Giordan</option>
+                <option value="Miguel V" ${task.assignedTo === 'Miguel V' ? 'selected' : ''}>Miguel V</option>
+                <option value="Miguel H" ${task.assignedTo === 'Miguel H' ? 'selected' : ''}>Miguel H</option>
+                <option value="Jesus" ${task.assignedTo === 'Jesus' ? 'selected' : ''}>Jesus</option>
             </select>
         </div>
 
