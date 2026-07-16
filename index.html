@@ -77,9 +77,10 @@
 
         <!-- Tabs -->
         <div class="flex space-x-1 bg-slate-200 p-1 rounded-xl mb-8 w-fit">
+<button onclick="switchTab('Pipeline')" id="tab-Pipeline" class="tab-btn px-6 py-2 rounded-lg font-medium transition active-tab bg-white text-blue-600 shadow-sm">Pipeline</button>
             <button onclick="switchTab('Kartik')" id="tab-Kartik" class="tab-btn px-6 py-2 rounded-lg font-medium transition active-tab bg-white text-blue-600 shadow-sm">Kartik</button>
-            <button onclick="switchTab('Harinder')" id="tab-Harinder" class="tab-btn px-6 py-2 rounded-lg font-medium transition text-slate-600 hover:text-slate-900">Harinder</button>
             <button onclick="switchTab('Sagar')" id="tab-Sagar" class="tab-btn px-6 py-2 rounded-lg font-medium transition text-slate-600 hover:text-slate-900">Sagar</button>
+            <button onclick="switchTab('Giordan')" id="tab-Giordan" class="tab-btn px-6 py-2 rounded-lg font-medium transition text-slate-600 hover:text-slate-900">Giordan</button>
         </div>
 
         <!-- Kanban Board -->
@@ -186,7 +187,7 @@
 
         // App State
         window.allTasks = [];
-        window.currentTab = 'Kartik';
+        window.currentTab = 'Pipeline';
         window.isAdmin = false;
         window.sortableInstances = [];
 
