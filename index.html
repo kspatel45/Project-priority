@@ -318,6 +318,21 @@
             }
         };
 
+        window.updateTaskAssignment = async (taskId, newAssignee) => {
+    const taskDoc = doc(db, 'artifacts', appId, 'public', 'data', 'tasks', taskId);
+    const taskSnap = await getDoc(taskDoc);
+    if (taskSnap.exists()) {
+        const data = taskSnap.data();
+        const timestamp = new Date().toLocaleString();
+        const newHistory = [...(data.history || []), `Assigned to ${newAssignee}: ${timestamp}`];
+        
+        await updateDoc(taskDoc, {
+            assignedTo: newAssignee,
+            history: newHistory
+        });
+    }
+};
+
         async function updateTaskStatus(taskId, newStatus) {
             const taskDoc = doc(db, 'artifacts', appId, 'public', 'data', 'tasks', taskId);
             const taskSnap = await getDoc(taskDoc);
@@ -373,40 +388,50 @@
                 card.className = 'task-card bg-white p-4 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-all group relative';
                 card.dataset.id = task.id;
                 card.innerHTML = `
-                    ${window.isAdmin ? `
-                    <button onclick="deleteTask('${task.id}')" class="absolute top-2 right-2 text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                    </button>` : ''}
-                    <h4 class="font-bold text-slate-800 mb-3 pr-6">${task.title}</h4>
-                    <div class="space-y-2 text-xs">
-                        <div class="flex justify-between items-center">
-                            <span class="text-slate-400">Timeline:</span>
-                            <div class="text-slate-700 flex items-center gap-1">
-                                <input type="date" value="${task.start}" 
-                                    onchange="updateTaskStartDate('${task.id}', this.value)"
-                                    class="date-input-inline text-blue-600 font-medium"> 
-                                <span class="text-slate-300">—</span>
-                                <span>${endDate}</span>
-                            </div>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-slate-400">Effort:</span>
-                            <span class="text-slate-700">${task.hours} hrs (~${Math.ceil(task.hours/8)} days)</span>
-                        </div>
-                        <div class="pt-2 border-t border-slate-50 flex justify-between items-center">
-                            <span class="text-slate-400">Status:</span>
-                            <span class="${daysColor}">
-                                ${task.status === 'completed' ? '✓ Finished' : (daysLeft < 0 ? 'Overdue!' : daysLeft + ' days left')}
-                            </span>
-                        </div>
-                        <div class="pt-2 mt-2 border-t border-slate-50 bg-slate-50/50 rounded p-1">
-                            <span class="text-[9px] uppercase font-bold text-slate-400 block mb-1">Activity Log</span>
-                            <div class="max-h-24 overflow-y-auto">
-                                ${historyHtml}
-                            </div>
-                        </div>
-                    </div>
-                `;
+    ${window.isAdmin ? `
+    <button onclick="deleteTask('${task.id}')" class="absolute top-2 right-2 text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+    </button>` : ''}
+    <h4 class="font-bold text-slate-800 mb-3 pr-6">${task.title}</h4>
+    <div class="space-y-2 text-xs">
+        <!-- New Assignee Selector -->
+        <div class="flex justify-between items-center mb-2 pb-2 border-b border-slate-100">
+            <span class="text-slate-400">Assigned To:</span>
+            <select onchange="updateTaskAssignment('${task.id}', this.value)" class="bg-slate-100 text-slate-700 font-medium rounded px-1.5 py-0.5 border-none outline-none cursor-pointer focus:ring-1 focus:ring-blue-500">
+                <option value="Kartik" ${task.assignedTo === 'Kartik' ? 'selected' : ''}>Kartik</option>
+                <option value="Harinder" ${task.assignedTo === 'Harinder' ? 'selected' : ''}>Harinder</option>
+                <option value="Sagar" ${task.assignedTo === 'Sagar' ? 'selected' : ''}>Sagar</option>
+            </select>
+        </div>
+
+        <div class="flex justify-between items-center">
+            <span class="text-slate-400">Timeline:</span>
+            <div class="text-slate-700 flex items-center gap-1">
+                <input type="date" value="${task.start}" 
+                    onchange="updateTaskStartDate('${task.id}', this.value)"
+                    class="date-input-inline text-blue-600 font-medium"> 
+                <span class="text-slate-300">—</span>
+                <span>${endDate}</span>
+            </div>
+        </div>
+        <div class="flex justify-between">
+            <span class="text-slate-400">Effort:</span>
+            <span class="text-slate-700">${task.hours} hrs (~${Math.ceil(task.hours/8)} days)</span>
+        </div>
+        <div class="pt-2 border-t border-slate-50 flex justify-between items-center">
+            <span class="text-slate-400">Status:</span>
+            <span class="${daysColor}">
+                ${task.status === 'completed' ? '✓ Finished' : (daysLeft < 0 ? 'Overdue!' : daysLeft + ' days left')}
+            </span>
+        </div>
+        <div class="pt-2 mt-2 border-t border-slate-50 bg-slate-50/50 rounded p-1">
+            <span class="text-[9px] uppercase font-bold text-slate-400 block mb-1">Activity Log</span>
+            <div class="max-h-24 overflow-y-auto">
+                ${historyHtml}
+            </div>
+        </div>
+    </div>
+`;
                 columns[task.status].appendChild(card);
             });
 
